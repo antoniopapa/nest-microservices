@@ -1,0 +1,40 @@
+version: '3'
+services:
+  ambassador_backend:
+    build: .
+    command: "npm run start:dev"
+    image: antoniopapa/ambassador:0.0.1
+    ports:
+      - 8003:3000
+    environment:
+      BOOSTRAP_SERVERS: pkc-4ygn6.europe-west3.gcp.confluent.cloud:9092
+      SASL_USERNAME: 6567MKPS6YFGEMJH
+      SASL_PASSWORD: zaf8YnUY/BzmTpNk6TFC+wJQQ0YoQdvmwfRQTRtRo19YZChYEev2Wkx+rG3Two2h
+      GROUP_ID: ambassador-consumer
+      DB_HOST: 35.246.225.225
+      DB_PORT: 3306
+      DB_DATABASE: ambassador
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      USERS_MS: http://users-backend:8001
+
+  ambassador_consumer:
+    build: .
+    command: "npm run consume"
+    image: antoniopapa/ambassador:0.0.1
+    environment:
+      BOOSTRAP_SERVERS: pkc-4ygn6.europe-west3.gcp.confluent.cloud:9092
+      SASL_USERNAME: 6567MKPS6YFGEMJH
+      SASL_PASSWORD: zaf8YnUY/BzmTpNk6TFC+wJQQ0YoQdvmwfRQTRtRo19YZChYEev2Wkx+rG3Two2h
+      GROUP_ID: ambassador-consumer
+      DB_HOST: 35.246.225.225
+      DB_PORT: 3306
+      DB_DATABASE: ambassador
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      USERS_MS: http://users-backend:8001
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379

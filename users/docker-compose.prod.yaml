@@ -1,0 +1,15 @@
+version: '3'
+services:
+  users_backend:
+    build:
+      context: .
+      dockerfile: prod.dockerfile
+    image: antoniopapa/users:0.0.2
+    ports:
+      - 8001:3000
+    environment:
+      DB_HOST: 35.234.119.46
+      DB_PORT: 3306
+      DB_DATABASE: users
+      DB_USERNAME: root
+      DB_PASSWORD: root

@@ -1,0 +1,37 @@
+version: '3'
+services:
+  checkout_backend:
+    build: .
+    command: "npm run start:dev"
+    image: antoniopapa/checkout:0.0.1
+    ports:
+      - 8004:3000
+    environment:
+      BOOSTRAP_SERVERS: pkc-4ygn6.europe-west3.gcp.confluent.cloud:9092
+      SASL_USERNAME: 6567MKPS6YFGEMJH
+      SASL_PASSWORD: zaf8YnUY/BzmTpNk6TFC+wJQQ0YoQdvmwfRQTRtRo19YZChYEev2Wkx+rG3Two2h
+      GROUP_ID: checkout-consumer
+      DB_HOST: 34.141.104.238
+      DB_PORT: 3306
+      DB_DATABASE: checkout
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      USERS_MS: http://users-backend:8001
+      CHECKOUT_URL: http://localhost:5000
+      STRIPE_KEY: sk_test_51H0wSsFHUJ5mamKOVQx6M8kihCIxpBk6DzOhrf4RrpEgqh2bfpI7vbsVu2j5BT0KditccHBnepG33QudcrtBUHfv00Bbw1XXjL
+
+  checkout_consumer:
+    build: .
+    command: "npm run consume"
+    image: antoniopapa/checkout:0.0.1
+    environment:
+      BOOSTRAP_SERVERS: pkc-4ygn6.europe-west3.gcp.confluent.cloud:9092
+      SASL_USERNAME: 6567MKPS6YFGEMJH
+      SASL_PASSWORD: zaf8YnUY/BzmTpNk6TFC+wJQQ0YoQdvmwfRQTRtRo19YZChYEev2Wkx+rG3Two2h
+      GROUP_ID: checkout-consumer
+      DB_HOST: 34.141.104.238
+      DB_PORT: 3306
+      DB_DATABASE: checkout
+      DB_USERNAME: root
+      DB_PASSWORD: root
+      USERS_MS: http://users-backend:8001

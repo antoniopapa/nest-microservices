@@ -1,0 +1,17 @@
+version: '3'
+services:
+  email_backend:
+    build:
+      context: .
+      dockerfile: prod.dockerfile
+    image: antoniopapa/email:0.0.1
+    environment:
+      BOOSTRAP_SERVERS: pkc-4ygn6.europe-west3.gcp.confluent.cloud:9092
+      SASL_USERNAME: 6567MKPS6YFGEMJH
+      SASL_PASSWORD: zaf8YnUY/BzmTpNk6TFC+wJQQ0YoQdvmwfRQTRtRo19YZChYEev2Wkx+rG3Two2h
+      GROUP_ID: email-consumer
+      MAIL_HOST: smtp.mailtrap.io
+      MAIL_PORT: 2525
+      MAIL_USERNAME: 812ec0b3a0e7c9
+      MAIL_PASSWORD: b8f923491c2570
+

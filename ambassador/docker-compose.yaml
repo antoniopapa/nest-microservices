@@ -1,0 +1,46 @@
+version: '3.9'
+services:
+  ambassador_backend:
+    build: .
+    command: "npm run start:dev"
+    ports:
+      - 8003:3000
+    volumes:
+      - .:/app
+    depends_on:
+      - ambassador_db
+    networks:
+      - ambassador
+      - users
+
+  ambassador_consumer:
+    build: .
+    command: "npm run consume"
+    depends_on:
+      - ambassador_db
+    networks:
+      - ambassador
+
+  ambassador_db:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_DATABASE: ambassador
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - .dbdata:/var/lib/mysql
+    networks:
+      - ambassador
+
+  redis:
+    image: redis
+    ports:
+      - 6379:6379
+    networks:
+      - ambassador
+
+networks:
+  ambassador:
+  users:
+    external:
+      name: users

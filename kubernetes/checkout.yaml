@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: checkout-backend
+  name: checkout-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: checkout-backend
+  template:
+    metadata:
+      labels:
+        io.kompose.service: checkout-backend
+    spec:
+      containers:
+        - args:
+            - npm
+            - run
+            - start:dev
+          env:
+            - name: BOOSTRAP_SERVERS
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secrets
+                  key: BOOSTRAP_SERVERS
+            - name: CHECKOUT_URL
+              value: http://localhost:5000
+            - name: DB_DATABASE
+              value: checkout
+            - name: DB_HOST
+              value: 34.141.104.238
+            - name: DB_PASSWORD
+              value: root
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USERNAME
+              value: root
+            - name: GROUP_ID
+              value: checkout-consumer
+            - name: SASL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secrets
+                  key: SASL_PASSWORD
+            - name: SASL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secrets
+                  key: SASL_USERNAME
+            - name: STRIPE_KEY
+              value: sk_test_51H0wSsFHUJ5mamKOVQx6M8kihCIxpBk6DzOhrf4RrpEgqh2bfpI7vbsVu2j5BT0KditccHBnepG33QudcrtBUHfv00Bbw1XXjL
+            - name: USERS_MS
+              value: http://users-backend:8001
+          image: antoniopapa/checkout:0.0.1
+          name: checkout-backend
+          ports:
+            - containerPort: 3000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: checkout-consumer
+  name: checkout-consumer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: checkout-consumer
+  template:
+    metadata:
+      labels:
+        io.kompose.service: checkout-consumer
+    spec:
+      containers:
+        - args:
+            - npm
+            - run
+            - consume
+          env:
+            - name: BOOSTRAP_SERVERS
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secrets
+                  key: BOOSTRAP_SERVERS
+            - name: DB_DATABASE
+              value: checkout
+            - name: DB_HOST
+              value: 34.141.104.238
+            - name: DB_PASSWORD
+              value: root
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USERNAME
+              value: root
+            - name: GROUP_ID
+              value: checkout-consumer
+            - name: SASL_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secrets
+                  key: SASL_PASSWORD
+            - name: SASL_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: kafka-secrets
+                  key: SASL_USERNAME
+            - name: USERS_MS
+              value: http://users-backend:8001
+          image: antoniopapa/checkout:0.0.1
+          name: checkout-consumer
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: checkout-backend
+  name: checkout-backend
+spec:
+  ports:
+    - name: "8004"
+      port: 8004
+      targetPort: 3000
+  selector:
+    io.kompose.service: checkout-backend
